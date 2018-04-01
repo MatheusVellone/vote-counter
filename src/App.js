@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import PropTypes from 'prop-types'
 import {
   reduce,
+  pipe,
+  replace,
   prop,
   split,
   addIndex,
@@ -12,7 +15,7 @@ import PersonComponent from './PersonComponent'
 
 const properties = [
   'name',
-  'image',
+  // 'image',
 ]
 const reduceIndexed = addIndex(reduce)
 const extractPeople = reduceIndexed((people, line, index) => {
@@ -31,6 +34,11 @@ const extractPeople = reduceIndexed((people, line, index) => {
   return people
 }, [])
 
+const splitLines = pipe(
+  replace('\r', ''),
+  split('\n')
+)
+
 class App extends Component {
   state = {
     names: [],
@@ -43,14 +51,15 @@ class App extends Component {
   componentDidMount() {
     axios.get('/names.txt')
       .then(prop('data'))
-      .then(split('\n'))
+      .then(splitLines)
       .then(extractPeople)
       .then(this.setNames)
   }
 
   render() {
+    const { photos } = this.props
     const applyNameComponents = (person, index) => (
-      <PersonComponent {...person} key={index} />
+      <PersonComponent {...person} showPhoto={photos} key={index} />
     )
     const names = this.state.names.map(applyNameComponents)
 
@@ -60,6 +69,14 @@ class App extends Component {
       </div>
     )
   }
+}
+
+App.propTypes = {
+  photos: PropTypes.bool.isRequired,
+}
+
+App.defaultProps = {
+  photos: false,
 }
 
 export default App

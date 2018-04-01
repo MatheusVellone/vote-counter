@@ -37,15 +37,19 @@ class PersonComponent extends Component {
 
   render() {
     const { voteCounter } = this.state
-    const { name, image, classes } = this.props
+    const { name, image, classes, showPhoto } = this.props
 
     return (
       <Card className={classes.card} raised>
-        <CardMedia
-          className={classes.media}
-          image={image}
-          title={name}
-        />
+        {
+          showPhoto
+            ? <CardMedia
+              className={classes.media}
+              image={image}
+              title={name}
+            />
+            : null
+        }
         <CardContent>
           <Typography gutterBottom variant="headline">
             {name}
@@ -79,5 +83,7 @@ PersonComponent.propTypes = {
   name: PropTypes.string.isRequired,
   image: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired,
+  showPhoto: PropTypes.bool.isRequired,
 }
+
 export default withStyles(styles)(PersonComponent)
